@@ -8,12 +8,20 @@
         "outDir": "./.tmp/build/",
         "moduleResolution": "node",
         "declaration": true,
+        "jsx": "react-jsx",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "lib": [
             "es2022",
             "dom"
         ]
     },
     "files": [
-        "./src/visual.ts"
+        "./src/visual.ts",
+        "./src/App.tsx",
+        "./src/settings.ts",
+        "./src/hooks/useSettings.tsx",
+        "./src/hooks/useData.tsx",
+        "./src/hooks/useViewport.tsx"
     ]
 }
