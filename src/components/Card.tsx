@@ -24,7 +24,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
     <MuiCard
       variant="outlined"
       sx={{
-        height: 221,
+        height: 220,
         width: 248,
         borderRadius: 6,
         p: 1,
@@ -74,12 +74,14 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
           },
         }}
       />
-      <CardActions sx={{ 
-        position: "absolute", 
-        bottom: 8, 
-        left: 8, 
-        right: 8 
-      }}>
+      <CardActions
+        sx={{
+          position: "absolute",
+          bottom: 8,
+          left: 8,
+          right: 8,
+        }}
+      >
         <Chip
           label={props.status}
           sx={{

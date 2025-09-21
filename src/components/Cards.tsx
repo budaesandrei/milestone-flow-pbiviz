@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Card from "./Card";
 import Box from "@mui/material/Box";
-import { Forward as Arrow} from "@mui/icons-material";
+import {
+  Forward as Arrow,
+  ChevronLeft,
+  ChevronRight,
+} from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 
-const Cards: React.FC<{ dataViews; settings }> = (props: {
+const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
   dataViews;
   settings;
+  viewport;
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [needsScroller, setNeedsScroller] = useState(false);
+  const [maxIndex, setMaxIndex] = useState(0);
   const rows = props.dataViews[0].table.rows;
   const cols = props.dataViews[0].table.columns.map(
     (col) => Object.keys(col.roles)[0]
@@ -16,12 +26,12 @@ const Cards: React.FC<{ dataViews; settings }> = (props: {
     cols.forEach((col, index) => {
       let value = row[index];
       // Convert date format if it's a dueDate field
-      if (col === 'dueDate' && value) {
+      if (col === "dueDate" && value) {
         const date = new Date(value);
-        value = date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit'
+        value = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
         });
       }
       obj[col] = value;
@@ -29,31 +39,135 @@ const Cards: React.FC<{ dataViews; settings }> = (props: {
     return obj;
   });
 
-  console.log(data);
+  // Check if cards extend beyond viewport
+  useEffect(() => {
+    const checkViewport = () => {
+      if (containerRef.current && data.length > 0) {
+        const containerWidth = containerRef.current.clientWidth;
+        const cardWidth = 248 + 8 + 32 + 8; // card width + gap + arrow + gap
+        const totalWidth = data.length * cardWidth;
+
+        if (totalWidth > containerWidth) {
+          setNeedsScroller(true);
+          const visibleCards = Math.floor(containerWidth / cardWidth);
+          setMaxIndex(Math.max(0, data.length - visibleCards));
+        } else {
+          setNeedsScroller(false);
+          setMaxIndex(0);
+        }
+      }
+    };
+
+    checkViewport();
+    window.addEventListener("resize", checkViewport);
+    return () => window.removeEventListener("resize", checkViewport);
+  }, [data]);
+
+  const slideLeft = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const slideRight = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
+  const getTransformValue = () => {
+    const cardWidth = 248 + 8 + 32 + 8; // card width + gap + arrow + gap
+    return `translateX(-${currentIndex * cardWidth}px)`;
+  };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, overflowX: 'auto', overflowY: 'hidden' }}>
-      {!!data &&
-        data.map((r, index) => (
-          <React.Fragment key={index}>
-            <Card
-              settings={props.settings}
-              milestoneName={r.milestoneName}
-              milestoneNumber={r.milestoneNumber}
-              dueDate={r.dueDate}
-              status={r.status}
-            />
-            {index < data.length - 1 && (
-              <Arrow
-                sx={{
-                  fontSize: 32,
-                  color: r.status?.toLowerCase() === 'completed' ? '#00b5ae' : '#ccc',
-                  flexShrink: 0,
-                }}
-              />
-            )}
-          </React.Fragment>
-        ))}
+    <Box sx={{ position: "relative" }}>
+      <Box
+        ref={containerRef}
+        sx={{
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            transform: getTransformValue(),
+            transition: "transform 0.3s ease-in-out",
+          }}
+        >
+          {!!data &&
+            data.map((r, index) => (
+              <React.Fragment key={index}>
+                <Card
+                  settings={props.settings}
+                  viewport={props.viewport}
+                  milestoneName={r.milestoneName}
+                  milestoneNumber={r.milestoneNumber}
+                  dueDate={r.dueDate}
+                  status={r.status}
+                />
+                {index < data.length - 1 && (
+                  <Arrow
+                    sx={{
+                      fontSize: 32,
+                      color:
+                        r.status?.toLowerCase() === "completed"
+                          ? "#00b5ae"
+                          : "#ccc",
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+              </React.Fragment>
+            ))}
+        </Box>
+      </Box>
+
+      {/* Navigation Buttons */}
+      {needsScroller && (
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            justifyContent: "flex-start",
+          }}
+        >
+          <IconButton
+            onClick={slideLeft}
+            disabled={currentIndex === 0}
+            sx={{
+              color: "#02313b",
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 1)",
+              },
+              "&.Mui-disabled": {
+                backgroundColor: "rgba(0,0,0,0.1)",
+              },
+            }}
+          >
+            <ChevronLeft />
+          </IconButton>
+
+          <IconButton
+            onClick={slideRight}
+            disabled={currentIndex >= maxIndex}
+            sx={{
+              color: "#02313b",
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 1)",
+              },
+              "&.Mui-disabled": {
+                backgroundColor: "rgba(0,0,0,0.1)",
+              },
+            }}
+          >
+            <ChevronRight />
+          </IconButton>
+        </Box>
+      )}
     </Box>
   );
 };

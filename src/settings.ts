@@ -22,27 +22,32 @@ class StatusStylesCard extends FormattingSettingsCard {
   inProgress = new formattingSettings.ColorPicker({
     name: "inProgress",
     displayName: "In Progress",
-    value: { value: "#f1f6df" }
+    value: { value: "#f1f6df" },
   });
   pending = new formattingSettings.ColorPicker({
     name: "pending",
     displayName: "Pending",
-    value: { value: "#f7e9f2" }
+    value: { value: "#f7e9f2" },
   });
   completed = new formattingSettings.ColorPicker({
     name: "completed",
     displayName: "Completed",
-    value: { value: "#d3efee" }
+    value: { value: "#d3efee" },
   });
   notStarted = new formattingSettings.ColorPicker({
     name: "notStarted",
     displayName: "Not Started",
-    value: { value: "#dedcd9" }
+    value: { value: "#dedcd9" },
   });
 
   name = "statusStyles";
   displayName = "Status Styles";
-  slices: FormattingSettingsSlice[] = [this.inProgress, this.pending, this.completed, this.notStarted];
+  slices: FormattingSettingsSlice[] = [
+    this.inProgress,
+    this.pending,
+    this.completed,
+    this.notStarted,
+  ];
 }
 
 export class VisualFormattingSettingsModel extends FormattingSettingsModel {
