@@ -1,32 +1,96 @@
 {
   "dataRoles": [
     {
-      "displayName": "Data",
-      "name": "data",
-      "kind": "Grouping"
+      "displayName": "Milestone Name",
+      "name": "milestoneName",
+      "kind": "Grouping",
+      "preferredTypes": [
+        {
+          "text": true
+        }
+      ]
+    },
+    {
+      "displayName": "Milestone Number",
+      "name": "milestoneNumber",
+      "kind": "Grouping",
+      "preferredTypes": [
+        {
+          "numeric": true
+        }
+      ]
+    },
+    {
+      "displayName": "Due Date",
+      "name": "dueDate",
+      "kind": "Grouping",
+      "preferredTypes": [
+        {
+          "text": true
+        }
+      ]
+    },
+    {
+      "displayName": "Status",
+      "name": "status",
+      "kind": "Grouping",
+      "preferredTypes": [
+        {
+          "text": true
+        }
+      ]
     }
   ],
-  "objects": {
-    "general": {
-      "properties": {
-        "replaceThis": {
-          "type": {
-            "text": true
-          }
-        }
-      }
-    }
-  },
   "dataViewMappings": [
     {
       "table": {
         "rows": {
           "select": [
-            { "for": { "in": "data" } }
+            { "for": { "in": "milestoneName" } },
+            { "for": { "in": "milestoneNumber" } },
+            { "for": { "in": "dueDate" } },
+            { "for": { "in": "status" } }
           ]
         }
       }
     }
   ],
-  "privileges": []
+  "objects": {
+    "general": {
+      "displayName": "General",
+      "properties": {
+        "title": {
+          "displayName": "Title",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    },
+    "statusStyles": {
+      "displayName": "Status Styles",
+      "properties": {
+        "inProgress": {
+          "displayName": "In Progress",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "pending": {
+          "displayName": "Pending",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "completed": {
+          "displayName": "Completed",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "notStarted": {
+          "displayName": "Not Started",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
+    }
+  },
+  "privileges": [],
+  "supportsHighlight": true,
+  "suppressDefaultTitle": true,
+  "supportsEmptyDataView": true
 }

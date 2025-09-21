@@ -29,6 +29,11 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
 }) => {
     const [settings, setSettings] = React.useState<VisualFormattingSettingsModel>(initialSettings);
 
+    // Update settings when initialSettings prop changes
+    React.useEffect(() => {
+        setSettings(initialSettings);
+    }, [initialSettings]);
+
     const updateSettings = (newSettings: Partial<VisualFormattingSettingsModel>) => {
         const updatedSettings = { ...settings, ...newSettings };
         setSettings(updatedSettings);

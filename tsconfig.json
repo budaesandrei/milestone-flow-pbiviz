@@ -20,8 +20,12 @@
         "./src/visual.ts",
         "./src/App.tsx",
         "./src/settings.ts",
+        "./src/types.ts",
+        "./src/utils/ColorUtils.ts",
         "./src/hooks/useSettings.tsx",
         "./src/hooks/useData.tsx",
-        "./src/hooks/useViewport.tsx"
+        "./src/hooks/useViewport.tsx",
+        "./src/components/Card.tsx",
+        "./src/components/Cards.tsx"
     ]
 }

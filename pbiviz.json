@@ -5,14 +5,17 @@
     "guid": "milestoneFlow836BEA0306AF467CA7D9C0EDBE1C8C0B",
     "visualClassName": "Visual",
     "version": "1.0.0.0",
-    "description": "",
-    "supportUrl": "",
-    "gitHubUrl": ""
+    "description": "This is a milestone flow visual for Power BI.",
+    "supportUrl": "https://github.com/budaesandrei/milestone-flow-pbiviz/issues",
+    "gitHubUrl": "https://github.com/budaesandrei/milestone-flow-pbiviz"
   },
   "apiVersion": "5.3.0",
-  "author": { "name": "", "email": "" },
+  "author": {
+    "name": "Andrei Budaes-Tanaru",
+    "email": "budaesandrei@gmail.com"
+  },
   "assets": { "icon": "assets/icon.png" },
-  "externalJS": null,
+  "externalJS": [],
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
   "dependencies": null,
