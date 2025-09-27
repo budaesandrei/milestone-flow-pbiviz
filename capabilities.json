@@ -31,6 +31,16 @@
       ]
     },
     {
+      "displayName": "Progress %",
+      "name": "progress",
+      "kind": "Grouping",
+      "preferredTypes": [
+        {
+          "numeric": true
+        }
+      ]
+    },
+    {
       "displayName": "Status",
       "name": "status",
       "kind": "Grouping",
@@ -47,8 +57,9 @@
         "rows": {
           "select": [
             { "for": { "in": "milestoneName" } },
-            { "for": { "in": "milestoneNumber" } },
+            { "for": { "in": "milestoneNumber" }, "optional": true },
             { "for": { "in": "dueDate" } },
+            { "for": { "in": "progress" } },
             { "for": { "in": "status" } }
           ]
         }

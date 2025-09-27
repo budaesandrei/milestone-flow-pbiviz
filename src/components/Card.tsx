@@ -5,8 +5,11 @@ import {
   CardHeader,
   Card as MuiCard,
   Chip,
+  LinearProgress,
+  linearProgressClasses,
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import { CardProps, StatusKey } from "../types";
 import { ColorUtils } from "../utils/ColorUtils";
 
@@ -20,11 +23,28 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
   const bg = statusBg[key];
   const textColor = statusText[key];
 
+  const progress = Number(Math.round(props.progress * 100)) || 0;
+  const progressBarStyles = props.settings?.progressBarStyles;
+  const highColor = progressBarStyles?.highColor?.value?.value ?? "#4caf50";
+  const mediumColor = progressBarStyles?.mediumColor?.value?.value ?? "#ff9800";
+  const lowColor = progressBarStyles?.lowColor?.value?.value ?? "#f44336";
+  const mediumToHighThreshold =
+    progressBarStyles?.mediumToHighThreshold?.value ?? 100;
+  const lowToMediumThreshold =
+    progressBarStyles?.lowToMediumThreshold?.value ?? 50;
+
+  const progressColor =
+    progress >= mediumToHighThreshold
+      ? highColor
+      : props.progress >= lowToMediumThreshold
+      ? mediumColor
+      : lowColor;
+
   return (
     <MuiCard
       variant="outlined"
       sx={{
-        height: 220,
+        height: 248,
         width: 248,
         borderRadius: 6,
         p: 1,
@@ -80,8 +100,32 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
           bottom: 8,
           left: 8,
           right: 8,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          gap: 2,
         }}
       >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 1 }}>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
+              width: 100,
+              height: 10,
+              backgroundColor: "#e0e0e0",
+              borderRadius: 5,
+              [`& .${linearProgressClasses.bar}`]: {
+                backgroundColor: progressColor,
+                borderRadius: 5,
+              },
+            }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            {`${progress}%`}
+          </Typography>
+        </Box>
         <Chip
           label={props.status}
           sx={{

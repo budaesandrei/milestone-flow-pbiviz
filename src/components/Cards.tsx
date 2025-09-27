@@ -17,6 +17,7 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [needsScroller, setNeedsScroller] = useState(false);
   const [maxIndex, setMaxIndex] = useState(0);
+
   const rows = props.dataViews[0].table.rows;
   const cols = props.dataViews[0].table.columns.map(
     (col) => Object.keys(col.roles)[0]
@@ -39,18 +40,30 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
     return obj;
   });
 
+  // When a milestoneNumber field is present, sort by it (ascending).
+  // Items without a valid number are sent to the end.
+  const hasMilestoneNumber = cols.includes("milestoneNumber");
+  const toNumericValue = (value: unknown) => {
+    if (typeof value === "number") return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY;
+    const parsed = Number(value as any);
+    return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
+  };
+  const dataSorted = hasMilestoneNumber
+    ? [...data].sort((a, b) => toNumericValue(a.milestoneNumber) - toNumericValue(b.milestoneNumber))
+    : data;
+
   // Check if cards extend beyond viewport
   useEffect(() => {
     const checkViewport = () => {
-      if (containerRef.current && data.length > 0) {
+      if (containerRef.current && dataSorted.length > 0) {
         const containerWidth = containerRef.current.clientWidth;
         const cardWidth = 248 + 8 + 32 + 8; // card width + gap + arrow + gap
-        const totalWidth = data.length * cardWidth;
+        const totalWidth = dataSorted.length * cardWidth;
 
         if (totalWidth > containerWidth) {
           setNeedsScroller(true);
           const visibleCards = Math.floor(containerWidth / cardWidth);
-          setMaxIndex(Math.max(0, data.length - visibleCards));
+          setMaxIndex(Math.max(0, dataSorted.length - visibleCards));
         } else {
           setNeedsScroller(false);
           setMaxIndex(0);
@@ -61,7 +74,7 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
     checkViewport();
     window.addEventListener("resize", checkViewport);
     return () => window.removeEventListener("resize", checkViewport);
-  }, [data]);
+  }, [dataSorted]);
 
   const slideLeft = () => {
     setCurrentIndex((prev) => Math.max(0, prev - 1));
@@ -94,18 +107,19 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
             transition: "transform 0.3s ease-in-out",
           }}
         >
-          {!!data &&
-            data.map((r, index) => (
+          {!!dataSorted &&
+            dataSorted.map((r, index) => (
               <React.Fragment key={index}>
                 <Card
                   settings={props.settings}
                   viewport={props.viewport}
                   milestoneName={r.milestoneName}
-                  milestoneNumber={r.milestoneNumber}
+                  milestoneNumber={!r.milestoneNumber ? index + 1 : r.milestoneNumber}
+                  progress={r.progress}
                   dueDate={r.dueDate}
                   status={r.status}
                 />
-                {index < data.length - 1 && (
+                {index < dataSorted.length - 1 && (
                   <Arrow
                     sx={{
                       fontSize: 32,
