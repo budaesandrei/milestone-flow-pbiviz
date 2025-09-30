@@ -81,20 +81,8 @@
     "statusStyles": {
       "displayName": "Status Styles",
       "properties": {
-        "inProgress": {
-          "displayName": "In Progress",
-          "type": { "fill": { "solid": { "color": true } } }
-        },
-        "pending": {
-          "displayName": "Pending",
-          "type": { "fill": { "solid": { "color": true } } }
-        },
-        "completed": {
-          "displayName": "Completed",
-          "type": { "fill": { "solid": { "color": true } } }
-        },
-        "notStarted": {
-          "displayName": "Not Started",
+        "fill": {
+          "displayName": "Color",
           "type": { "fill": { "solid": { "color": true } } }
         }
       }

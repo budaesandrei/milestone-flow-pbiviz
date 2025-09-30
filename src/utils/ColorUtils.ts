@@ -1,6 +1,4 @@
 // src/utils/ColorUtils.ts
-import { StatusKey } from "../types";
-
 export class ColorUtils {
   /**
    * WCAG 2.1 contrast ratio between two RGB colors
@@ -160,33 +158,5 @@ export class ColorUtils {
 
     const finalRgb = this.hslToRgb(targetHue, targetSat, candidateL);
     return this.rgbToHex(finalRgb.r, finalRgb.g, finalRgb.b);
-  }
-
-  static getStatusBgMap(formattingSettings?: any): Record<StatusKey, string> {
-    // Use formatting pane colors when available; fall back to default palette
-    const fs = formattingSettings?.statusStyles;
-    return {
-      "in-progress": fs?.inProgress?.value?.value ?? "#f1f6df",
-      pending: fs?.pending?.value?.value ?? "#f7e9f2",
-      completed: fs?.completed?.value?.value ?? "#d3efee",
-      "not-started": fs?.notStarted?.value?.value ?? "#dedcd9",
-    };
-  }
-
-  static getStatusTextMap(formattingSettings?: any): Record<StatusKey, string> {
-    // Calculate darker text colors from the actual background colors
-    const fs = formattingSettings?.statusStyles;
-    return {
-      "in-progress": this.getTextColorForBg(
-        fs?.inProgress?.value?.value ?? "#f1f6df"
-      ),
-      pending: this.getTextColorForBg(fs?.pending?.value?.value ?? "#f7e9f2"),
-      completed: this.getTextColorForBg(
-        fs?.completed?.value?.value ?? "#d3efee"
-      ),
-      "not-started": this.getTextColorForBg(
-        fs?.notStarted?.value?.value ?? "#dedcd9"
-      ),
-    };
   }
 }

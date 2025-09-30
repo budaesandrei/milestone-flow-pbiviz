@@ -25,6 +25,7 @@ const theme = createTheme({
 });
 
 export class Visual implements IVisual {
+  private host: powerbi.extensibility.visual.IVisualHost;
   private target: HTMLElement;
   private reactRoot: Root;
   private settings: VisualFormattingSettingsModel;
@@ -36,6 +37,7 @@ export class Visual implements IVisual {
     this.target = options.element;
     this.formattingSettingsService = new FormattingSettingsService();
     this.settings = new VisualFormattingSettingsModel();
+    this.host = options.host;
 
     // Create React root
     this.reactRoot = createRoot(this.target);
@@ -45,24 +47,34 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-    // Update settings from dataViews
-    if (options.dataViews && options.dataViews[0]) {
-      this.settings =
-        this.formattingSettingsService.populateFormattingSettingsModel(
-          VisualFormattingSettingsModel,
-          options.dataViews[0]
-        );
-    }
-
-    // Store the latest data
     this.dataViews = options.dataViews;
     this.viewport = options.viewport;
 
-    // Re-render with new data
+    // 1) create a fresh model
+    this.settings = new VisualFormattingSettingsModel();
+
+    // 2) build dynamic status slices so populate can hydrate them
+    if (this.dataViews?.[0]) {
+      this.settings.statusStyles.updateColorPickers(
+        this.dataViews,
+        this.host.colorPalette,
+        this.host
+      );
+    }
+
+    // 3) now populate values from metadata (this hydrates the dynamic slices)
+    this.settings =
+      this.formattingSettingsService.populateFormattingSettingsModel(
+        VisualFormattingSettingsModel,
+        options.dataViews?.[0]
+      );
+
+    // 4) render
     this.renderApp();
   }
 
   public getFormattingModel(): powerbi.visuals.FormattingModel {
+    // model is already prepared in update
     return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 
