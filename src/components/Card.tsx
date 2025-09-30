@@ -14,10 +14,9 @@ import { CardProps } from "../types";
 import { ColorUtils } from "../utils/ColorUtils";
 
 const Card: React.FC<CardProps> = (props: CardProps) => {
-  const slice = props.settings.statusStyles?.slices?.find(
-    (s) => s.displayName === props.status
-  );
-  const bg = (slice as any)?.value?.value?.toString() ?? undefined;
+  const slices = props.settings?.statusStyles?.slices;
+  const slice = slices?.find((s) => s.displayName === props.status);
+  const bg = (slice as any)?.value?.value?.toString() ?? "#ebebeb";
   const textColor = ColorUtils.getTextColorForBg(bg);
 
   const progress = Number(Math.round(props.progress * 100)) || 0;
@@ -33,7 +32,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
   const progressColor =
     progress >= mediumToHighThreshold
       ? highColor
-      : props.progress >= lowToMediumThreshold
+      : progress >= lowToMediumThreshold
       ? mediumColor
       : lowColor;
 

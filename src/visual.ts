@@ -34,6 +34,7 @@ export class Visual implements IVisual {
   private viewport?: powerbi.IViewport;
 
   constructor(options: VisualConstructorOptions) {
+    this.host = options.host;
     this.target = options.element;
     this.formattingSettingsService = new FormattingSettingsService();
     this.settings = new VisualFormattingSettingsModel();
@@ -47,33 +48,45 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-    this.dataViews = options.dataViews;
-    this.viewport = options.viewport;
+    const dv = options.dataViews && options.dataViews[0];
+    this.settings =
+      this.formattingSettingsService.populateFormattingSettingsModel(
+        VisualFormattingSettingsModel,
+        dv
+      );
 
-    // 1) hydrate settings from metadata
-    if (this.dataViews?.[0]) {
-      this.settings =
-        this.formattingSettingsService.populateFormattingSettingsModel(
-          VisualFormattingSettingsModel,
-          this.dataViews[0]
-        );
-    } else {
-      this.settings = new VisualFormattingSettingsModel();
+    if (!dv) {
+      this.renderNoData();
+      return;
     }
 
-    // 2) now build dynamic slices on the hydrated instance
-    this.settings.statusStyles.updateColorPickers(
-      this.dataViews,
-      this.host.colorPalette,
-      this.host
-    );
+    if (dv.table) {
+      // Store the latest data
+      this.dataViews = options.dataViews;
+      this.viewport = options.viewport;
+    } else {
+      this.renderNoData();
+      return;
+    }
+
+    const statusIndex = dv.table?.columns.filter((c) => c.roles?.status)?.[0]
+      ?.index;
+    const statuses = dv.table?.rows
+      .map((r) => r[statusIndex]?.toString())
+      ?.filter((s) => s !== undefined && s !== null) as string[] | undefined;
+    const uniqueStatuses = [...new Set(statuses)].slice(0, 6);
+
+    // Feed distinct statuses into formatting settings so StatusStyles card is dynamic
+    if (this.settings?.statusStyles && Array.isArray(uniqueStatuses)) {
+      // Preserve any existing slices/colors by passing current slices
+      (this.settings.statusStyles as any).setStatuses(
+        uniqueStatuses,
+        (this.settings.statusStyles as any).slices
+      );
+    }
 
     // 3) react render
     this.renderApp();
-  }
-
-  public getFormattingModel(): powerbi.visuals.FormattingModel {
-    return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 
   private renderApp() {
@@ -105,5 +118,35 @@ export class Visual implements IVisual {
     );
 
     this.reactRoot.render(AppWithProviders);
+  }
+
+  private renderNoData() {
+    this.reactRoot.render(
+      React.createElement(
+        "div",
+        {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            color: "#666",
+          },
+        },
+        "No data available"
+      )
+    );
+  }
+
+  // --- Power BI Interface Methods ---
+
+  public getFormattingModel(): powerbi.visuals.FormattingModel {
+    return this.formattingSettingsService.buildFormattingModel(this.settings);
+  }
+
+  public destroy(): void {
+    if (this.reactRoot) {
+      this.reactRoot.unmount();
+    }
   }
 }
