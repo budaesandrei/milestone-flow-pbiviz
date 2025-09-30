@@ -21,15 +21,34 @@ class GeneralCard extends FormattingSettingsCard {
 class StatusStylesCard extends FormattingSettingsCard {
   name = "statusStyles";
   displayName = "Status Styles";
-  uniqueStatuses: string[] = ["In Progress", "Completed", "Not Started"];
-
-  slices: FormattingSettingsSlice[] = this.uniqueStatuses.map((status, idx) => {
-    return new formattingSettings.ColorPicker({
+  uniqueStatuses: string[] = [];
+  // Pre-create 6 index-based slices so the formatting service can populate values from capabilities
+  slices: FormattingSettingsSlice[] = Array.from({ length: 6 }).map((_, idx) =>
+    new formattingSettings.ColorPicker({
       name: idx.toString(),
-      displayName: status,
+      displayName: "",
       value: { value: "#f1f6df" },
+    })
+  );
+
+  onPreProcess?(): void {
+    // Hide any slice without a display name
+    (this.slices || []).forEach((s: any) => {
+      s.visible = !!s.displayName;
     });
-  });
+  }
+
+  public setStatuses(statuses: string[] | undefined, existingSlices?: FormattingSettingsSlice[]) {
+    const incoming = (statuses || []).filter((s) => !!s);
+    this.uniqueStatuses = incoming;
+
+    // Keep exactly 6 slices (0..5) to match capabilities; map statuses to display names
+    for (let i = 0; i < this.slices.length; i++) {
+      const status = incoming[i] ?? "";
+      const slice = this.slices[i] as any;
+      if (slice) slice.displayName = status;
+    }
+  }
 }
 
 class ProgressBarStylesCard extends FormattingSettingsCard {

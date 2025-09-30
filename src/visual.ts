@@ -48,8 +48,11 @@ export class Visual implements IVisual {
 
   public update(options: VisualUpdateOptions) {
     const dv = options.dataViews && options.dataViews[0];
-    this.settings = this.formattingSettingsService
-      .populateFormattingSettingsModel(VisualFormattingSettingsModel, dv);
+    this.settings =
+      this.formattingSettingsService.populateFormattingSettingsModel(
+        VisualFormattingSettingsModel,
+        dv
+      );
 
     if (!dv) {
       this.renderNoData();
@@ -65,9 +68,21 @@ export class Visual implements IVisual {
       return;
     }
 
-    const statusIndex = dv.table?.columns.filter((c) => c.roles?.status)?.[0]?.index;
-    const statuses = dv.table?.rows.map((r) => r[statusIndex]?.toString())?.filter((s) => s !== undefined);
-    const uniqueStatuses = [...new Set(statuses)];
+    const statusIndex = dv.table?.columns.filter((c) => c.roles?.status)?.[0]
+      ?.index;
+    const statuses = dv.table?.rows
+      .map((r) => r[statusIndex]?.toString())
+      ?.filter((s) => s !== undefined && s !== null) as string[] | undefined;
+    const uniqueStatuses = [...new Set(statuses)].slice(0, 6);
+
+    // Feed distinct statuses into formatting settings so StatusStyles card is dynamic
+    if (this.settings?.statusStyles && Array.isArray(uniqueStatuses)) {
+      // Preserve any existing slices/colors by passing current slices
+      (this.settings.statusStyles as any).setStatuses(
+        uniqueStatuses,
+        (this.settings.statusStyles as any).slices
+      );
+    }
 
     // Re-render with new data
     this.renderApp();
@@ -114,8 +129,8 @@ export class Visual implements IVisual {
             alignItems: "center",
             justifyContent: "center",
             height: "100%",
-            color: "#666"
-          }
+            color: "#666",
+          },
         },
         "No data available"
       )
