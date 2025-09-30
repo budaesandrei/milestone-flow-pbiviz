@@ -23,6 +23,7 @@ export class ColorUtils {
   }
 
   static hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+    if (!hex) return null;
     let h = hex.replace("#", "").trim();
     if (h.length === 3)
       h = h

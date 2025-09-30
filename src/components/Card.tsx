@@ -14,7 +14,9 @@ import { CardProps } from "../types";
 import { ColorUtils } from "../utils/ColorUtils";
 
 const Card: React.FC<CardProps> = (props: CardProps) => {
-  const slice = props.settings.statusStyles?.slices?.find(s => s.displayName === props.status);
+  const slice = props.settings.statusStyles?.slices?.find(
+    (s) => s.displayName === props.status
+  );
   const bg = (slice as any)?.value?.value?.toString() ?? undefined;
   const textColor = ColorUtils.getTextColorForBg(bg);
 

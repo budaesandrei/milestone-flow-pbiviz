@@ -50,31 +50,29 @@ export class Visual implements IVisual {
     this.dataViews = options.dataViews;
     this.viewport = options.viewport;
 
-    // 1) create a fresh model
-    this.settings = new VisualFormattingSettingsModel();
-
-    // 2) build dynamic status slices so populate can hydrate them
+    // 1) hydrate settings from metadata
     if (this.dataViews?.[0]) {
-      this.settings.statusStyles.updateColorPickers(
-        this.dataViews,
-        this.host.colorPalette,
-        this.host
-      );
+      this.settings =
+        this.formattingSettingsService.populateFormattingSettingsModel(
+          VisualFormattingSettingsModel,
+          this.dataViews[0]
+        );
+    } else {
+      this.settings = new VisualFormattingSettingsModel();
     }
 
-    // 3) now populate values from metadata (this hydrates the dynamic slices)
-    this.settings =
-      this.formattingSettingsService.populateFormattingSettingsModel(
-        VisualFormattingSettingsModel,
-        options.dataViews?.[0]
-      );
+    // 2) now build dynamic slices on the hydrated instance
+    this.settings.statusStyles.updateColorPickers(
+      this.dataViews,
+      this.host.colorPalette,
+      this.host
+    );
 
-    // 4) render
+    // 3) react render
     this.renderApp();
   }
 
   public getFormattingModel(): powerbi.visuals.FormattingModel {
-    // model is already prepared in update
     return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 

@@ -18,11 +18,11 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
   const [needsScroller, setNeedsScroller] = useState(false);
   const [maxIndex, setMaxIndex] = useState(0);
 
-  const rows = props.dataViews[0].table.rows;
-  const cols = props.dataViews[0].table.columns.map(
+  const rows = props.dataViews[0]?.table?.rows;
+  const cols = props.dataViews[0]?.table?.columns?.map(
     (col) => Object.keys(col.roles)[0]
   );
-  const data = rows.map((row) => {
+  const data = rows?.map((row) => {
     const obj = {};
     cols.forEach((col, index) => {
       let value = row[index];
@@ -40,16 +40,22 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
     return obj;
   });
 
+  if (!data) return null;
+
   // When a milestoneNumber field is present, sort by it (ascending).
   // Items without a valid number are sent to the end.
-  const hasMilestoneNumber = cols.includes("milestoneNumber");
+  const hasMilestoneNumber = cols?.includes("milestoneNumber");
   const toNumericValue = (value: unknown) => {
-    if (typeof value === "number") return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY;
+    if (typeof value === "number")
+      return Number.isFinite(value) ? value : Number.POSITIVE_INFINITY;
     const parsed = Number(value as any);
     return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
   };
   const dataSorted = hasMilestoneNumber
-    ? [...data].sort((a, b) => toNumericValue(a.milestoneNumber) - toNumericValue(b.milestoneNumber))
+    ? [...data].sort(
+        (a, b) =>
+          toNumericValue(a.milestoneNumber) - toNumericValue(b.milestoneNumber)
+      )
     : data;
 
   // Check if cards extend beyond viewport
@@ -114,7 +120,9 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
                   settings={props.settings}
                   viewport={props.viewport}
                   milestoneName={r.milestoneName}
-                  milestoneNumber={!r.milestoneNumber ? index + 1 : r.milestoneNumber}
+                  milestoneNumber={
+                    !r.milestoneNumber ? index + 1 : r.milestoneNumber
+                  }
                   progress={r.progress}
                   dueDate={r.dueDate}
                   status={r.status}
