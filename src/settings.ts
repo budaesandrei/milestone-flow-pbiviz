@@ -19,42 +19,24 @@ class GeneralCard extends FormattingSettingsCard {
 }
 
 class StatusStylesCard extends FormattingSettingsCard {
-  inProgress = new formattingSettings.ColorPicker({
-    name: "inProgress",
-    displayName: "In Progress",
-    value: { value: "#f1f6df" },
-  });
-  pending = new formattingSettings.ColorPicker({
-    name: "pending",
-    displayName: "Pending",
-    value: { value: "#f7e9f2" },
-  });
-  completed = new formattingSettings.ColorPicker({
-    name: "completed",
-    displayName: "Completed",
-    value: { value: "#d3efee" },
-  });
-  notStarted = new formattingSettings.ColorPicker({
-    name: "notStarted",
-    displayName: "Not Started",
-    value: { value: "#dedcd9" },
-  });
-
   name = "statusStyles";
   displayName = "Status Styles";
-  slices: FormattingSettingsSlice[] = [
-    this.inProgress,
-    this.pending,
-    this.completed,
-    this.notStarted,
-  ];
+  uniqueStatuses: string[] = ["In Progress", "Completed", "Not Started"];
+
+  slices: FormattingSettingsSlice[] = this.uniqueStatuses.map((status, idx) => {
+    return new formattingSettings.ColorPicker({
+      name: idx.toString(),
+      displayName: status,
+      value: { value: "#f1f6df" },
+    });
+  });
 }
 
 class ProgressBarStylesCard extends FormattingSettingsCard {
   highColor = new formattingSettings.ColorPicker({
     name: "highColor",
     displayName: "High Color",
-    value: { value: "#4caf50" }
+    value: { value: "#4caf50" },
   });
   mediumToHighThreshold = new formattingSettings.NumUpDown({
     name: "mediumToHighThreshold",
@@ -62,13 +44,13 @@ class ProgressBarStylesCard extends FormattingSettingsCard {
     value: 100,
     options: {
       minValue: { type: powerbi.visuals.ValidatorType.Min, value: 0 },
-      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 }
-    }
+      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 },
+    },
   });
   mediumColor = new formattingSettings.ColorPicker({
     name: "mediumColor",
     displayName: "Medium Color",
-    value: { value: "#ff9800" }
+    value: { value: "#ff9800" },
   });
   lowToMediumThreshold = new formattingSettings.NumUpDown({
     name: "lowToMediumThreshold",
@@ -76,33 +58,45 @@ class ProgressBarStylesCard extends FormattingSettingsCard {
     value: 50,
     options: {
       minValue: { type: powerbi.visuals.ValidatorType.Min, value: 0 },
-      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 }
-    }
+      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 },
+    },
   });
   lowColor = new formattingSettings.ColorPicker({
     name: "lowColor",
     displayName: "Low Color",
-    value: { value: "#f44336" }
+    value: { value: "#f44336" },
   });
 
   name = "progressBarStyles";
   displayName = "Progress Bar Styles";
-  slices: FormattingSettingsSlice[] = [this.highColor, this.mediumToHighThreshold, this.mediumColor, this.lowToMediumThreshold, this.lowColor];
+  slices: FormattingSettingsSlice[] = [
+    this.highColor,
+    this.mediumToHighThreshold,
+    this.mediumColor,
+    this.lowToMediumThreshold,
+    this.lowColor,
+  ];
 
   onPreProcess?(): void {
     // Establish current values (bounded to 0..100 for safety)
-    const high = Math.max(0, Math.min(100, this.mediumToHighThreshold.value ?? 100));
-    const low = Math.max(0, Math.min(100, this.lowToMediumThreshold.value ?? 0));
+    const high = Math.max(
+      0,
+      Math.min(100, this.mediumToHighThreshold.value ?? 100)
+    );
+    const low = Math.max(
+      0,
+      Math.min(100, this.lowToMediumThreshold.value ?? 0)
+    );
 
     // Invisible walls: only set validators, do not change values
     this.lowToMediumThreshold.options = {
       minValue: { type: powerbi.visuals.ValidatorType.Min, value: 0 },
-      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: high - 1 }
+      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: high - 1 },
     };
 
     this.mediumToHighThreshold.options = {
       minValue: { type: powerbi.visuals.ValidatorType.Min, value: low + 1 },
-      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 }
+      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 },
     };
   }
 }

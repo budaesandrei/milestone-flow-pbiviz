@@ -81,20 +81,47 @@
     "statusStyles": {
       "displayName": "Status Styles",
       "properties": {
-        "inProgress": {
-          "displayName": "In Progress",
+        "0": {
           "type": { "fill": { "solid": { "color": true } } }
         },
-        "pending": {
-          "displayName": "Pending",
+        "1": {
           "type": { "fill": { "solid": { "color": true } } }
         },
-        "completed": {
-          "displayName": "Completed",
+        "2": {
           "type": { "fill": { "solid": { "color": true } } }
         },
-        "notStarted": {
-          "displayName": "Not Started",
+        "3": {
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "4": {
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "5": {
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
+    },
+    "progressBarStyles": {
+      "displayName": "Progress Bar Styles",
+      "properties": {
+        "highColor": {
+          "displayName": "High Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "mediumToHighThreshold": {
+          "displayName": "Med-High Threshold %",
+          "type": { "numeric": true }
+        },
+        "mediumColor": {
+          "displayName": "Medium Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "lowToMediumThreshold": {
+          "displayName": "Low-Med Threshold %",
+          "type": { "numeric": true }
+        },
+        "lowColor": {
+          "displayName": "Low Color",
           "type": { "fill": { "solid": { "color": true } } }
         }
       }

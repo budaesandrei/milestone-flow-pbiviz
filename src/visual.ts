@@ -25,6 +25,7 @@ const theme = createTheme({
 });
 
 export class Visual implements IVisual {
+  private host: powerbi.extensibility.visual.IVisualHost;
   private target: HTMLElement;
   private reactRoot: Root;
   private settings: VisualFormattingSettingsModel;
@@ -33,6 +34,7 @@ export class Visual implements IVisual {
   private viewport?: powerbi.IViewport;
 
   constructor(options: VisualConstructorOptions) {
+    this.host = options.host;
     this.target = options.element;
     this.formattingSettingsService = new FormattingSettingsService();
     this.settings = new VisualFormattingSettingsModel();
@@ -45,25 +47,30 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-    // Update settings from dataViews
-    if (options.dataViews && options.dataViews[0]) {
-      this.settings =
-        this.formattingSettingsService.populateFormattingSettingsModel(
-          VisualFormattingSettingsModel,
-          options.dataViews[0]
-        );
+    const dv = options.dataViews && options.dataViews[0];
+    this.settings = this.formattingSettingsService
+      .populateFormattingSettingsModel(VisualFormattingSettingsModel, dv);
+
+    if (!dv) {
+      this.renderNoData();
+      return;
     }
 
-    // Store the latest data
-    this.dataViews = options.dataViews;
-    this.viewport = options.viewport;
+    if (dv.table) {
+      // Store the latest data
+      this.dataViews = options.dataViews;
+      this.viewport = options.viewport;
+    } else {
+      this.renderNoData();
+      return;
+    }
+
+    const statusIndex = dv.table?.columns.filter((c) => c.roles?.status)?.[0]?.index;
+    const statuses = dv.table?.rows.map((r) => r[statusIndex]?.toString())?.filter((s) => s !== undefined);
+    const uniqueStatuses = [...new Set(statuses)];
 
     // Re-render with new data
     this.renderApp();
-  }
-
-  public getFormattingModel(): powerbi.visuals.FormattingModel {
-    return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 
   private renderApp() {
@@ -95,5 +102,35 @@ export class Visual implements IVisual {
     );
 
     this.reactRoot.render(AppWithProviders);
+  }
+
+  private renderNoData() {
+    this.reactRoot.render(
+      React.createElement(
+        "div",
+        {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            color: "#666"
+          }
+        },
+        "No data available"
+      )
+    );
+  }
+
+  // --- Power BI Interface Methods ---
+
+  public getFormattingModel(): powerbi.visuals.FormattingModel {
+    return this.formattingSettingsService.buildFormattingModel(this.settings);
+  }
+
+  public destroy(): void {
+    if (this.reactRoot) {
+      this.reactRoot.unmount();
+    }
   }
 }

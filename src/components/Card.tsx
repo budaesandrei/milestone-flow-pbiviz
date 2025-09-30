@@ -10,18 +10,14 @@ import {
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { CardProps, StatusKey } from "../types";
+import { CardProps } from "../types";
 import { ColorUtils } from "../utils/ColorUtils";
 
 const Card: React.FC<CardProps> = (props: CardProps) => {
-  const statusBg = ColorUtils.getStatusBgMap(props.settings);
-  const statusText = ColorUtils.getStatusTextMap(props.settings);
-  const key = (props.status ?? "")
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, "-") as StatusKey;
-  const bg = statusBg[key];
-  const textColor = statusText[key];
+  const slices = props.settings?.statusStyles?.slices;
+  const slice = slices?.find((s) => s.displayName === props.status);
+  const bg = (slice as any)?.value?.value?.toString() ?? "#ebebeb";
+  const textColor = ColorUtils.getTextColorForBg(bg);
 
   const progress = Number(Math.round(props.progress * 100)) || 0;
   const progressBarStyles = props.settings?.progressBarStyles;
@@ -36,7 +32,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
   const progressColor =
     progress >= mediumToHighThreshold
       ? highColor
-      : props.progress >= lowToMediumThreshold
+      : progress >= lowToMediumThreshold
       ? mediumColor
       : lowColor;
 
