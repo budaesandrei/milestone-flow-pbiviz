@@ -13,7 +13,6 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
   settings;
   viewport;
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [needsScroller, setNeedsScroller] = useState(false);
   const [maxIndex, setMaxIndex] = useState(0);
@@ -58,29 +57,38 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
       )
     : data;
 
+  // Calculate responsive card size based on viewport height
+  const getCardSize = () => {
+    const baseCardSize = 248;
+    const maxViewportHeight = 388;
+    const minCardSize = 180;
+    
+    const viewportHeight = props.viewport?.height || 400;
+    const scaleFactor = viewportHeight > maxViewportHeight 
+      ? 1 
+      : Math.max(viewportHeight / maxViewportHeight, minCardSize / baseCardSize);
+    
+    return Math.round(baseCardSize * scaleFactor);
+  };
+
   // Check if cards extend beyond viewport
   useEffect(() => {
-    const checkViewport = () => {
-      if (containerRef.current && dataSorted.length > 0) {
-        const containerWidth = containerRef.current.clientWidth;
-        const cardWidth = 248 + 8 + 32 + 8; // card width + gap + arrow + gap
-        const totalWidth = dataSorted.length * cardWidth;
+    if (dataSorted.length > 0) {
+      const containerWidth = props.viewport.width;
+      const cardSize = getCardSize();
+      const cardWidth = cardSize + 8 + 32 + 8; // card width + gap + arrow + gap
+      const totalWidth = dataSorted.length * cardWidth;
 
-        if (totalWidth > containerWidth) {
-          setNeedsScroller(true);
-          const visibleCards = Math.floor(containerWidth / cardWidth);
-          setMaxIndex(Math.max(0, dataSorted.length - visibleCards));
-        } else {
-          setNeedsScroller(false);
-          setMaxIndex(0);
-        }
+      if (totalWidth > containerWidth) {
+        setNeedsScroller(true);
+        const visibleCards = Math.floor(containerWidth / cardWidth);
+        setMaxIndex(dataSorted.length - visibleCards);
+      } else {
+        setNeedsScroller(false);
+        setMaxIndex(0);
       }
-    };
-
-    checkViewport();
-    window.addEventListener("resize", checkViewport);
-    return () => window.removeEventListener("resize", checkViewport);
-  }, [dataSorted]);
+    }
+  }, [dataSorted, props.viewport]);
 
   const slideLeft = () => {
     setCurrentIndex((prev) => Math.max(0, prev - 1));
@@ -91,14 +99,14 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
   };
 
   const getTransformValue = () => {
-    const cardWidth = 248 + 8 + 32 + 8; // card width + gap + arrow + gap
+    const cardSize = getCardSize();
+    const cardWidth = cardSize + 8 + 32 + 8; // card width + gap + arrow + gap
     return `translateX(-${currentIndex * cardWidth}px)`;
   };
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative", maxHeight: "calc(100vh - 120px)" }}>
       <Box
-        ref={containerRef}
         sx={{
           overflow: "hidden",
           width: "100%",
@@ -151,6 +159,8 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
             display: "flex",
             gap: 1,
             justifyContent: "flex-start",
+            width: "100%",
+            padding: "8px 0",
           }}
         >
           <IconButton

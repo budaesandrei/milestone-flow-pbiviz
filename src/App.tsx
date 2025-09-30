@@ -25,19 +25,20 @@ const App: React.FC = () => {
         gap: 2,
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          color: "#02313b",
-          fontWeight: 400,
-        }}
-      >
-        {!!settings.general?.title?.value &&
-          `Milestones for ${settings.general.title.value}`}
-      </Typography>
+      {!!settings.general?.title?.value && (
+        <Typography
+          variant="h6"
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            color: "#02313b",
+            fontWeight: 400,
+          }}
+        >
+          {`Milestones for ${settings.general.title.value}`}
+        </Typography>
+      )}
       {/* Add your milestone flow components here */}
       <Cards dataViews={dataViews} settings={settings} viewport={viewport} />
     </Box>

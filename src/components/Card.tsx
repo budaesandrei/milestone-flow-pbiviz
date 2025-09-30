@@ -36,17 +36,29 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
       ? mediumColor
       : lowColor;
 
+  // Calculate responsive card size based on viewport height
+  const baseCardSize = 248;
+  const maxViewportHeight = 388;
+  const minCardSize = 180; // Minimum reasonable card size
+  
+  const viewportHeight = props.viewport.height;
+  const scaleFactor = viewportHeight > maxViewportHeight 
+    ? 1 
+    : Math.max(viewportHeight / maxViewportHeight, minCardSize / baseCardSize);
+  
+  const cardSize = Math.round(baseCardSize * scaleFactor);
+
   return (
     <MuiCard
       variant="outlined"
       sx={{
-        height: 248,
-        width: 248,
-        borderRadius: 6,
-        p: 1,
+        height: cardSize,
+        width: cardSize,
+        borderRadius: Math.round(6 * scaleFactor),
+        p: Math.round(1 * scaleFactor),
         borderColor: "#d6d6d6",
         boxShadow: "0px 3px 3px 0px rgba(0, 0, 0, 0.1)",
-        mb: 3,
+        mb: Math.round(3 * scaleFactor),
         position: "relative",
       }}
     >
@@ -61,7 +73,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
         <Typography
           sx={{
             color: "#606973",
-            fontSize: 16,
+            fontSize: Math.round(16 * scaleFactor),
             fontWeight: 600,
           }}
         >
@@ -75,7 +87,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
           flex: 1,
           "& .MuiCardHeader-title": {
             color: "#02313b",
-            fontSize: 20,
+            fontSize: Math.round(20 * scaleFactor),
             fontWeight: 600,
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -85,7 +97,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
           },
           "& .MuiCardHeader-subheader": {
             color: "#606973",
-            fontSize: 14,
+            fontSize: Math.round(14 * scaleFactor),
             fontWeight: 600,
           },
         }}
@@ -93,39 +105,41 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
       <CardActions
         sx={{
           position: "absolute",
-          bottom: 8,
-          left: 8,
-          right: 8,
+          bottom: Math.round(8 * scaleFactor),
+          left: Math.round(8 * scaleFactor),
+          right: Math.round(8 * scaleFactor),
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
           alignItems: "flex-start",
-          gap: 2,
+          gap: Math.round(1.5 * scaleFactor),
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: Math.round(1 * scaleFactor), ml: Math.round(1 * scaleFactor) }}>
           <LinearProgress
             variant="determinate"
             value={progress}
             sx={{
-              width: 100,
-              height: 10,
+              width: Math.round(100 * scaleFactor),
+              height: Math.round(10 * scaleFactor),
               backgroundColor: "#e0e0e0",
-              borderRadius: 5,
+              borderRadius: Math.round(5 * scaleFactor),
               [`& .${linearProgressClasses.bar}`]: {
                 backgroundColor: progressColor,
-                borderRadius: 5,
+                borderRadius: Math.round(5 * scaleFactor),
               },
             }}
           />
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: Math.round(14 * scaleFactor) }}>
             {`${progress}%`}
           </Typography>
         </Box>
         <Chip
           label={props.status}
           sx={{
-            width: 100,
+            width: Math.round(120 * scaleFactor),
+            height: Math.round(30 * scaleFactor),
+            fontSize: Math.round(14 * scaleFactor),
             color: textColor,
             backgroundColor: bg,
             fontWeight: 500,
