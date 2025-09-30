@@ -21,49 +21,6 @@ class GeneralCard extends FormattingSettingsCard {
 class StatusStylesCard extends FormattingSettingsCard {
   name = "statusStyles";
   displayName = "Status Styles";
-<<<<<<< HEAD
-  slices: FormattingSettingsSlice[] = [];
-
-  public updateColorPickers(
-    dataViews: powerbi.DataView[] | undefined,
-    colorPalette: powerbi.extensibility.IColorPalette,
-    host: powerbi.extensibility.visual.IVisualHost
-  ) {
-    this.slices = []; // important - avoid dupes and ensure clean state
-    const table = dataViews?.[0]?.table;
-    if (!table?.columns?.length || !table?.rows?.length) return;
-
-    const statusColIdx = table.columns.findIndex((c) => c?.roles?.status);
-    if (statusColIdx < 0) return;
-
-    // first occurrence index for each distinct status
-    const firstIndexByStatus = new Map<string, number>();
-    for (let i = 0; i < table.rows.length; i++) {
-      const raw = table.rows[i][statusColIdx];
-      const key = raw == null ? "" : String(raw);
-      if (!key) continue;
-      if (!firstIndexByStatus.has(key)) firstIndexByStatus.set(key, i);
-    }
-
-    if (firstIndexByStatus.size === 0) return;
-
-    for (const [status, rowIndex] of firstIndexByStatus.entries()) {
-      const selectionId = host
-        .createSelectionIdBuilder()
-        .withTable(table, rowIndex) // table mapping binding
-        .createSelectionId();
-
-      const defaultColor = colorPalette.getColor(status).value;
-
-      this.slices.push(
-        new formattingSettings.ColorPicker({
-          name: "fill", // must match capabilities
-          displayName: status,
-          value: { value: defaultColor },
-          selector: selectionId.getSelector(), // data-bound instance
-        })
-      );
-=======
   uniqueStatuses: string[] = [];
   // Pre-create 6 index-based slices so the formatting service can populate values from capabilities
   slices: FormattingSettingsSlice[] = Array.from({ length: 6 }).map((_, idx) =>
@@ -90,7 +47,6 @@ class StatusStylesCard extends FormattingSettingsCard {
       const status = incoming[i] ?? "";
       const slice = this.slices[i] as any;
       if (slice) slice.displayName = status;
->>>>>>> bookmark
     }
   }
 }
