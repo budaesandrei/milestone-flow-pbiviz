@@ -40,12 +40,16 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
   const baseCardSize = 248;
   const maxViewportHeight = 388;
   const minCardSize = 180; // Minimum reasonable card size
-  
+
   const viewportHeight = props.viewport.height;
-  const scaleFactor = viewportHeight > maxViewportHeight 
-    ? 1 
-    : Math.max(viewportHeight / maxViewportHeight, minCardSize / baseCardSize);
-  
+  const scaleFactor =
+    viewportHeight > maxViewportHeight
+      ? 1
+      : Math.max(
+          viewportHeight / maxViewportHeight,
+          minCardSize / baseCardSize
+        );
+
   const cardSize = Math.round(baseCardSize * scaleFactor);
 
   return (
@@ -115,25 +119,39 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
           gap: Math.round(1.5 * scaleFactor),
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: Math.round(1 * scaleFactor), ml: Math.round(1 * scaleFactor) }}>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
+        {props.progress !== undefined && (
+          <Box
             sx={{
-              width: Math.round(100 * scaleFactor),
-              height: Math.round(10 * scaleFactor),
-              backgroundColor: "#e0e0e0",
-              borderRadius: Math.round(5 * scaleFactor),
-              [`& .${linearProgressClasses.bar}`]: {
-                backgroundColor: progressColor,
-                borderRadius: Math.round(5 * scaleFactor),
-              },
+              display: "flex",
+              alignItems: "center",
+              gap: Math.round(1 * scaleFactor),
+              ml: Math.round(1 * scaleFactor),
             }}
-          />
-          <Typography variant="body2" color="text.secondary" sx={{ fontSize: Math.round(14 * scaleFactor) }}>
-            {`${progress}%`}
-          </Typography>
-        </Box>
+          >
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                width: Math.round(100 * scaleFactor),
+                height: Math.round(10 * scaleFactor),
+                backgroundColor: "#e0e0e0",
+                borderRadius: Math.round(5 * scaleFactor),
+                [`& .${linearProgressClasses.bar}`]: {
+                  backgroundColor: progressColor,
+                  borderRadius: Math.round(5 * scaleFactor),
+                },
+              }}
+            />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontSize: Math.round(14 * scaleFactor) }}
+            >
+              {`${progress}%`}
+            </Typography>
+          </Box>
+        )}
+
         <Chip
           label={props.status}
           sx={{

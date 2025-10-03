@@ -17,10 +17,15 @@ const Cards: React.FC<{ dataViews; settings; viewport }> = (props: {
   const [needsScroller, setNeedsScroller] = useState(false);
   const [maxIndex, setMaxIndex] = useState(0);
 
+  if (!props.dataViews) return null;
+
   const rows = props.dataViews[0]?.table?.rows;
   const cols = props.dataViews[0]?.table?.columns?.map(
     (col) => Object.keys(col.roles)[0]
   );
+
+  if (!rows || !cols) return null;
+
   const data = rows?.map((row) => {
     const obj = {};
     cols.forEach((col, index) => {
