@@ -28,6 +28,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
     progressBarStyles?.mediumToHighThreshold?.value ?? 100;
   const lowToMediumThreshold =
     progressBarStyles?.lowToMediumThreshold?.value ?? 50;
+  const cardBackgroundColor = props.settings?.general?.cardBackgroundColor?.value?.value ?? "#ffffff";
 
   const progressColor =
     progress >= mediumToHighThreshold
@@ -42,13 +43,16 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
   const minCardSize = 180; // Minimum reasonable card size
 
   const viewportHeight = props.viewport.height;
+  const userScaleFactor =
+    (props.settings?.general?.scaleFactor?.value ?? 50) / 50;
+
   const scaleFactor =
     viewportHeight > maxViewportHeight
-      ? 1
+      ? 1 * userScaleFactor
       : Math.max(
           viewportHeight / maxViewportHeight,
           minCardSize / baseCardSize
-        );
+        ) * userScaleFactor;
 
   const cardSize = Math.round(baseCardSize * scaleFactor);
 
@@ -64,6 +68,7 @@ const Card: React.FC<CardProps> = (props: CardProps) => {
         boxShadow: "0px 3px 3px 0px rgba(0, 0, 0, 0.1)",
         mb: Math.round(3 * scaleFactor),
         position: "relative",
+        backgroundColor: cardBackgroundColor,
       }}
     >
       <CardContent

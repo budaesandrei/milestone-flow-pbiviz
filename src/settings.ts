@@ -13,9 +13,25 @@ class GeneralCard extends FormattingSettingsCard {
     placeholder: "Enter Title",
   });
 
+  scaleFactor = new formattingSettings.Slider({
+    name: "scaleFactor",
+    displayName: "Scale Factor",
+    value: 50,
+    options: {
+      minValue: { type: powerbi.visuals.ValidatorType.Min, value: 10 },
+      maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 },
+    },
+  });
+
+  cardBackgroundColor = new formattingSettings.ColorPicker({
+    name: "cardBackgroundColor",
+    displayName: "Card Background Color",
+    value: { value: "#ffffff" },
+  });
+
   name = "general";
   displayName = "General";
-  slices: FormattingSettingsSlice[] = [this.title];
+  slices: FormattingSettingsSlice[] = [this.title, this.scaleFactor, this.cardBackgroundColor];
 }
 
 class StatusStylesCard extends FormattingSettingsCard {

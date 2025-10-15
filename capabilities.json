@@ -75,6 +75,20 @@
           "type": {
             "text": true
           }
+        },
+        "scaleFactor": {
+          "displayName": "Scale Factor",
+          "type": {
+            "numeric": true
+          }
+        },
+        "cardBackgroundColor": {
+          "displayName": "Card Background Color",
+          "type": {
+            "fill": {
+              "solid": { "color": true }
+            }
+          }
         }
       }
     },

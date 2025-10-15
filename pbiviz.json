@@ -4,7 +4,7 @@
     "displayName": "Milestone Flow",
     "guid": "MilestoneFlow",
     "visualClassName": "Visual",
-    "version": "1.0.2.1",
+    "version": "1.0.3.0",
     "description": "This is a milestone flow visual for Power BI.",
     "supportUrl": "https://github.com/budaesandrei/milestone-flow-pbiviz/issues",
     "gitHubUrl": "https://github.com/budaesandrei/milestone-flow-pbiviz"
@@ -20,5 +20,5 @@
   "capabilities": "capabilities.json",
   "dependencies": null,
   "stringResources": [],
-  "version": "1.0.2.1"
+  "version": "1.0.3.0"
 }

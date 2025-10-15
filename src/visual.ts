@@ -4,7 +4,6 @@ import powerbi from "powerbi-visuals-api";
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import "./../style/visual.less";
 
@@ -113,7 +112,6 @@ export class Visual implements IVisual {
     const AppWithProviders = React.createElement(
       ThemeProvider,
       { theme },
-      React.createElement(CssBaseline, null),
       settingsProvider
     );
 
